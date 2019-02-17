@@ -15,3 +15,20 @@ modulo: 0.031004979999999994
 cast and sum: 4.305835275000001
 ```
 Modulo is over 100x faster
+
+
+Exercism user betegelse has implemented this in the following way:  
+```python
+
+drops = ((3,'Pling'), (5,'Plang'), (7,'Plong'))
+
+def raindrops(n):
+	"""Converts a number to a string according to the raindrop sounds."""
+
+	speak = [s for f, s in drops if n % f == 0]
+	return "".join(speak) if speak else str(n)
+```  
+This solution is more DRY and allows for adding additional use cases with minimal effort.
+
+**Lessons**  
+• whenever you see you're **repeating code**, ask yourself whether there exists a **functional-programming solution** (like a map, or list comprehension, in Python's case)
