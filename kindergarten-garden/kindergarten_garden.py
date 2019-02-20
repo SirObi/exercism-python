@@ -1,20 +1,19 @@
 class Garden(object):
 
-    _default_students = ["Alice", "Bob", "Charlie", "David",
-                         "Eve", "Fred", "Ginny", "Harriet",
-                         "Ileana", "Joseph", "Kincaid", "Larry"]
+    DEFAULT_STUDENTS = ["Alice", "Bob", "Charlie", "David",
+                        "Eve", "Fred", "Ginny", "Harriet",
+                        "Ileana", "Joseph", "Kincaid", "Larry"]
 
-    _plant_long_names = {
+    PLANT_LONG_NAMES = {
         "V": "Violets",
         "C": "Clover",
         "G": "Grass",
         "R": "Radishes"
     }
 
-    def __init__(self, diagram, students=None):
+    def __init__(self, diagram, students=DEFAULT_STUDENTS):
         self._diagram = diagram.split('\n')
-        self._students = sorted(
-            students) if students else self._default_students
+        self._students = sorted(students)
 
     def plants(self, name):
         pot_1 = self._students.index(name) * 2
