@@ -11,6 +11,6 @@ class Luhn(object):
         if hasattr(self, '_card_num_digits') and len(self._card_num_digits) > 1:
             idx_to_luhn = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]
             doubled = sum(idx_to_luhn[d] for d in self._card_num_to_double)
-            no_doubled = sum((self._card_num_no_double))
+            no_doubled = sum(self._card_num_no_double)
             return (doubled + no_doubled) % 10 == 0
         return False
