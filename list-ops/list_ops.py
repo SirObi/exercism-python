@@ -42,7 +42,4 @@ def foldr(function, xs, acc):
 
 
 def reverse(xs):
-    if len(xs) == 0:
-        return xs
-    else:
-        return [*reversed(xs)]
+    return [*reversed(xs)]
