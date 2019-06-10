@@ -3,17 +3,17 @@ def binary_search(list_of_numbers, number):
     if len(list_of_numbers) <= 0:
         raise ValueError("Empty array")
 
-    start = 0
-    end = len(list_of_numbers) - 1
+    left_index = 0
+    right_index = len(list_of_numbers) - 1
 
-    while start <= end:
-        middle = (start + end) // 2
+    while left_index <= right_index:
+        middle = (left_index + right_index) // 2
 
         if list_of_numbers[middle] == number:
             return middle
-            
+
         if number > list_of_numbers[middle]:
-            start = middle + 1
+            left_index = middle + 1
         else:
-            end = middle - 1
+            right_index = middle - 1
     raise ValueError("Number not in array")
