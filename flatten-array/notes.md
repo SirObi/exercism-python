@@ -35,4 +35,7 @@ def flatten(lst):
     return list(_flatten(lst))
 ```
 
-It's interesting how recursion can be implemented with generators, with `yield from`.
+It's interesting how recursion can be implemented with generators, with `yield from`.  
+The second solution seems much more readable, even though it requires a bit more code.  
+Then again, the question is: do we want to read shorter, but less readable code, or longer,  
+but cognitively easier code?  
