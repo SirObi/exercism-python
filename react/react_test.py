@@ -119,6 +119,7 @@ class ReactTest(unittest.TestCase):
         output.add_callback(callback1)
         output.add_callback(callback2)
         input_.value = 31
+        print(input_.value)
         self.assertEqual(cb1_observer[-1], 32)
         self.assertEqual(cb2_observer[-1], 32)
 
