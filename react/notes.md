@@ -6,6 +6,8 @@ I don't know how partial() is used in the observer_factory.
 Materials on Reactive Programming:  
 https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
 
-
 It makes sense to start with simple test cases and fix them first, rather than  
-jumping at a problem with a more complex test case/use case.  
+jumping at a problem with a more complex test case/use case.
+
+Lessons:  
+• list has a `remove()` method, which you can use to delete a given object, by passing in the object itself, rather than passing an index `pop()` or `del()`
