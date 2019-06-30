@@ -123,4 +123,5 @@ class ComputeCell(object):
         self.callbacks.append(callback)
 
     def remove_callback(self, callback):
-        self.callbacks.remove(callback)
+        if callback in self.callbacks:
+            self.callbacks.remove(callback)
