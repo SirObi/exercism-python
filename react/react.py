@@ -10,6 +10,7 @@ class InputCell(object):
         return self.value * other
 
     def __sub__(self, other):
+        print(f"subtracting {other} from {self.value}")
         return self.value - other
 
     def __lt__(self, other):
@@ -74,6 +75,7 @@ class ComputeCell(object):
     def __sub__(self, other):
         if type(other) is not int:
             return self.value - other.value
+        print(f"subtracting {other} from {self.value}")
         return self.value - other
 
     def __lt__(self, other):
@@ -108,9 +110,11 @@ class ComputeCell(object):
         for callback in self.callbacks:
             print("calling a callback in output cell")
             callback(self._value)
+        for o in self.observers:
+            o.value
 
     def register_observer(self, cell):
-        print("Output cell registering observer")
+        print(f"Output cell with value {self._value} registering observer")
         self.observers.append(cell)
         print("Output cell observers are", self.observers)
 
