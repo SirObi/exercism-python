@@ -10,7 +10,9 @@ class InputCell(object):
         return self.value * other
 
     def register_observer(self, cell):
+        print("Input cell registering observer")
         self.observers.append(cell)
+        print("Input cell observers are", self.observers)
 
 
     @property
@@ -19,15 +21,18 @@ class InputCell(object):
 
     @value.setter
     def value(self, new_value):
+        print("Current input value is", self.value)
+        print("Setting new input value", new_value)
         if self._value != new_value:
             self._value = new_value
             print("calling callbacks")
             self.notify()
 
     def notify(self):
+        print("Notifying observers of input cell")
         for o in self.observers:
             print(type(o))
-            "calling a callback"
+            print("calling a callback in input cell")
             o.value
 
     # def register_observer(self, cell):
@@ -56,6 +61,7 @@ class ComputeCell(object):
     def value(self):
         self._value = self.compute_function(self.inputs)
         print("Compute cell value is", self._value)
+        self.notify()
         return self._value
 
     @value.setter
@@ -63,13 +69,13 @@ class ComputeCell(object):
         print("setting value")
         if self._value != new_value:
             self._value = new_value
-            print("calling callbacks")
+            print("calling callbacks output cell")
             self.notify()
 
     def notify(self):
         print("notify called")
         for callback in self.callbacks:
-            print("calling a callback")
+            print("calling a callback in output cell")
             callback(self._value)
 
     def add_callback(self, callback):

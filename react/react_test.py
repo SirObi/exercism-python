@@ -194,7 +194,10 @@ class ReactTest(unittest.TestCase):
 
     # Utility functions.
     def callback_factory(self, observer):
+        print("Factory creating callback")
         def callback(observer, value):
+            print(f"observer is {observer}")
+            print(f"callback appending value {value} to observer")
             observer.append(value)
         return partial(callback, observer)
 
