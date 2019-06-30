@@ -1,3 +1,4 @@
+import functools
 from abc import ABC
 
 class Cell(ABC):
@@ -5,30 +6,34 @@ class Cell(ABC):
         self._value = initial_value
         self.observers = []
 
+    def ops_on_cells(func):
+        @functools.wraps(func)
+        def wrapper_ops_on_cells(self, other, *args, **kwargs):
+            if type(other) == int:
+                return func(self, other, *args, **kwargs)
+            elif type(other) in [InputCell, ComputeCell]:
+                return func(self, other.value, *args, **kwargs)
+            raise ValueError(f"Cannot perform operation on Cell and {type(other)}")
+        return wrapper_ops_on_cells
+
+    @ops_on_cells
     def __add__(self, other):
-        if type(other) is not int:
-            return self.value + other.value
         return self.value + other
 
+    @ops_on_cells
     def __mul__(self, other):
-        if type(other) is not int:
-            return self.value * other.value
         return self.value * other
 
+    @ops_on_cells
     def __sub__(self, other):
-        if type(other) is not int:
-            return self.value - other.value
-        print(f"subtracting {other} from {self.value}")
         return self.value - other
 
+    @ops_on_cells
     def __lt__(self, other):
-        if type(other) is not int:
-            return self.value < other.value
         return self.value < other
 
+    @ops_on_cells
     def __gt__(self, other):
-        if type(other) is not int:
-            return self.value > other
         return self.value > other
 
 
@@ -41,7 +46,6 @@ class InputCell(Cell):
         print("Input cell registering observer")
         self.observers.append(cell)
         print("Input cell observers are", self.observers)
-
 
     @property
     def value(self):
@@ -59,15 +63,8 @@ class InputCell(Cell):
     def notify(self):
         print("Notifying observers of input cell")
         for o in self.observers:
-            print(type(o))
             print("calling a callback in input cell")
             o.value
-
-    # def register_observer(self, cell):
-    #     self.observers.append(cell)
-    # and add a setter?
-
-
 
 
 class ComputeCell(Cell):
