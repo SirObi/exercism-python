@@ -1,23 +1,41 @@
-class InputCell(object):
+from abc import ABC
+
+class Cell(ABC):
     def __init__(self, initial_value):
         self._value = initial_value
         self.observers = []
 
     def __add__(self, other):
+        if type(other) is not int:
+            return self.value + other.value
         return self.value + other
 
     def __mul__(self, other):
+        if type(other) is not int:
+            return self.value * other.value
         return self.value * other
 
     def __sub__(self, other):
+        if type(other) is not int:
+            return self.value - other.value
         print(f"subtracting {other} from {self.value}")
         return self.value - other
 
     def __lt__(self, other):
+        if type(other) is not int:
+            return self.value < other.value
         return self.value < other
 
     def __gt__(self, other):
+        if type(other) is not int:
+            return self.value > other
         return self.value > other
+
+
+class InputCell(Cell):
+    def __init__(self, initial_value):
+        self._value = initial_value
+        self.observers = []
 
     def register_observer(self, cell):
         print("Input cell registering observer")
@@ -52,7 +70,7 @@ class InputCell(object):
 
 
 
-class ComputeCell(object):
+class ComputeCell(Cell):
     def __init__(self, inputs, compute_function):
         self.inputs = inputs
         self.observers = []
@@ -61,32 +79,6 @@ class ComputeCell(object):
         self.compute_function = compute_function
         self._value = compute_function(self.inputs)
         self.callbacks = []
-
-    def __add__(self, other):
-        if type(other) is not int:
-            return self.value + other.value
-        return self.value + other
-
-    def __mul__(self, other):
-        if type(other) is not int:
-            return self.value * other.value
-        return self.value * other
-
-    def __sub__(self, other):
-        if type(other) is not int:
-            return self.value - other.value
-        print(f"subtracting {other} from {self.value}")
-        return self.value - other
-
-    def __lt__(self, other):
-        if type(other) is not int:
-            return self.value < other.value
-        return self.value < other
-
-    def __gt__(self, other):
-        if type(other) is not int:
-            return self.value > other
-        return self.value > other
 
     @property
     def value(self):
