@@ -9,6 +9,15 @@ class InputCell(object):
     def __mul__(self, other):
         return self.value * other
 
+    def __sub__(self, other):
+        return self.value - other
+
+    def __lt__(self, other):
+        return self.value < other
+
+    def __gt__(self, other):
+        return self.value > other
+
     def register_observer(self, cell):
         print("Input cell registering observer")
         self.observers.append(cell)
@@ -45,6 +54,7 @@ class InputCell(object):
 class ComputeCell(object):
     def __init__(self, inputs, compute_function):
         self.inputs = inputs
+        self.observers = []
         for input_cell in self.inputs:
             input_cell.register_observer(self)
         self.compute_function = compute_function
@@ -52,16 +62,37 @@ class ComputeCell(object):
         self.callbacks = []
 
     def __add__(self, other):
-        return self.value + other.value
+        if type(other) is not int:
+            return self.value + other.value
+        return self.value + other
 
     def __mul__(self, other):
-        return self.value * other.value
+        if type(other) is not int:
+            return self.value * other.value
+        return self.value * other
+
+    def __sub__(self, other):
+        if type(other) is not int:
+            return self.value - other.value
+        return self.value - other
+
+    def __lt__(self, other):
+        if type(other) is not int:
+            return self.value < other.value
+        return self.value < other
+
+    def __gt__(self, other):
+        if type(other) is not int:
+            return self.value > other
+        return self.value > other
 
     @property
     def value(self):
-        self._value = self.compute_function(self.inputs)
-        print("Compute cell value is", self._value)
-        self.notify()
+        new_value = self.compute_function(self.inputs)
+        if new_value != self._value:
+            self._value = new_value
+            print("Compute cell value is", self._value)
+            self.notify()
         return self._value
 
     @value.setter
@@ -77,6 +108,11 @@ class ComputeCell(object):
         for callback in self.callbacks:
             print("calling a callback in output cell")
             callback(self._value)
+
+    def register_observer(self, cell):
+        print("Output cell registering observer")
+        self.observers.append(cell)
+        print("Output cell observers are", self.observers)
 
     def add_callback(self, callback):
         print("adding callback")
