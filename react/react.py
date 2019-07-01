@@ -1,7 +1,8 @@
 import functools
-from abc import ABC
+from abc import ABC, abstractmethod
 
 class Cell(ABC):
+    @abstractmethod
     def __init__(self, initial_value):
         self._value = initial_value
         self.observers = []
@@ -48,6 +49,9 @@ class Cell(ABC):
 
 
 class InputCell(Cell):
+    def __init__(self, initial_value):
+        super().__init__(initial_value)
+
     def register_observer(self, cell):
         self.observers.append(cell)
 
@@ -59,12 +63,12 @@ class InputCell(Cell):
 class ComputeCell(Cell):
     def __init__(self, inputs, compute_function):
         self.inputs = inputs
-        self.observers = []
+        super().__init__(compute_function(self.inputs))
+        
         self.callbacks = []
+        self.compute_function = compute_function
         for input_cell in self.inputs:
             input_cell.register_observer(self)
-        self.compute_function = compute_function
-        self._value = compute_function(self.inputs)
 
     @property
     def value(self):
