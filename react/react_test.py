@@ -169,6 +169,7 @@ class ReactTest(unittest.TestCase):
 
         output.add_callback(callback1)
         input_.value = 4
+
         self.assertEqual(observer[-1], 10)
 
     def test_callbacks_not_called_so_long_as_output_not_changed(self):
