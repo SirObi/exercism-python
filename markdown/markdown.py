@@ -10,12 +10,29 @@ HEADERS = OrderedDict({'######': 'h6',
                        '##': 'h2',
                        '#': 'h1'})
 
+
 def detect_header_tags(l=''):
     for k,v in HEADERS.items():
         line_with_header = re.match(f'{k} (.*)', l)
         if line_with_header:
             rest_string = line_with_header.group(1)
             return OPENING_TAG + v + '>' + rest_string + CLOSING_TAG + v + '>'
+    return l
+
+
+def detect_bold_tags(l=''):
+    line_with_bold = re.match('(.*)__(.*)__(.*)', l)
+    if line_with_bold:
+        return line_with_bold.group(1) + '<strong>' + \
+            line_with_bold.group(2) + '</strong>' + line_with_bold.group(3)
+    return l
+
+
+def detect_italic_tags(l=''):
+    line_with_ital = re.match('(.*)_(.*)_(.*)', l)
+    if line_with_ital:
+        return line_with_ital.group(1) + '<em>' + \
+            line_with_ital.group(2) + '</em>' + line_with_ital.group(3)
     return l
 
 
@@ -33,33 +50,15 @@ def parse(markdown):
                 is_bold = False
                 is_italic = False
                 curr = m.group(1)
-                m1 = re.match('(.*)__(.*)__(.*)', curr)
-                if m1:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
-                    is_bold = True
-                m1 = re.match('(.*)_(.*)_(.*)', curr)
-                if m1:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
-                    is_italic = True
+                curr = detect_bold_tags(curr)
+                curr = detect_italic_tags(curr)
                 i = '<ul><li>' + curr + '</li>'
             else:
                 is_bold = False
                 is_italic = False
                 curr = m.group(1)
-                m1 = re.match('(.*)__(.*)__(.*)', curr)
-                if m1:
-                    is_bold = True
-                m1 = re.match('(.*)_(.*)_(.*)', curr)
-                if m1:
-                    is_italic = True
-                if is_bold:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
-                if is_italic:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
+                curr = detect_bold_tags(curr)
+                curr = detect_italic_tags(curr)
                 i = '<li>' + curr + '</li>'
         else:
             if in_list:
@@ -69,12 +68,8 @@ def parse(markdown):
         m = re.match('<h|<ul|<p|<li', i)
         if not m:
             i = '<p>' + i + '</p>'
-        m = re.match('(.*)__(.*)__(.*)', i)
-        if m:
-            i = m.group(1) + '<strong>' + m.group(2) + '</strong>' + m.group(3)
-        m = re.match('(.*)_(.*)_(.*)', i)
-        if m:
-            i = m.group(1) + '<em>' + m.group(2) + '</em>' + m.group(3)
+        i = detect_bold_tags(i)
+        i = detect_italic_tags(i)
         if in_list_append:
             i = '</ul>' + i
             in_list_append = False
