@@ -1,11 +1,10 @@
 import functools
 from abc import ABC, abstractmethod
 
-class Cell(ABC):
+class CellWithOps(ABC):
     @abstractmethod
     def __init__(self, initial_value):
         self._value = initial_value
-        self.observers = []
 
     def ops_on_cells(func):
         @functools.wraps(func)
@@ -48,23 +47,31 @@ class Cell(ABC):
         return self.value > other
 
 
-class InputCell(Cell):
-    def __init__(self, initial_value):
-        super().__init__(initial_value)
-
-    def register_observer(self, cell):
-        self.observers.append(cell)
+class Observable(ABC):
+    @abstractmethod
+    def __init__(self):
+        self.observers = []
 
     def notify(self):
         for o in self.observers:
             o.value
 
+    def register_observer(self, cell):
+        self.observers.append(cell)
 
-class ComputeCell(Cell):
+
+class InputCell(CellWithOps, Observable):
+    def __init__(self, initial_value):
+        CellWithOps.__init__(self,initial_value)
+        Observable.__init__(self)
+
+
+class ComputeCell(CellWithOps, Observable):
     def __init__(self, inputs, compute_function):
         self.inputs = inputs
-        super().__init__(compute_function(self.inputs))
-        
+        CellWithOps.__init__(self, compute_function(self.inputs))
+        Observable.__init__(self)
+
         self.callbacks = []
         self.compute_function = compute_function
         for input_cell in self.inputs:
@@ -79,13 +86,9 @@ class ComputeCell(Cell):
         return self._value
 
     def notify(self):
+        Observable.notify(self)
         for callback in self.callbacks:
             callback(self._value)
-        for o in self.observers:
-            o.value
-
-    def register_observer(self, cell):
-        self.observers.append(cell)
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
