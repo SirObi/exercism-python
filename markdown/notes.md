@@ -90,9 +90,93 @@ curr = replace_bold_tags(curr)
 curr = replace_italic_tags(curr)
 ```
 
+Now we can actually have those two mappings applied only once in the entire script and remove them from elsewhere:
+
+```python
+for i in lines:
+      i = replace_header_tags(i)
+      i = replace_bold_tags(i)
+      i = replace_italic_tags(i)
+```
+
 2.  Second step: reduce number variables tracking state
 
-It's hard for a human user to keep in mind the state of the application while reading the code.
+It's hard for a human user to keep in mind the state of the application while reading the code.  
+Now that we have `replace_bold_tags` and `replace_italic_tags`, there is no need to keep track of the state,  
+so `is_bold` and `is_italic` can be removed.
+
+By now, the script looks like this:
+
+```python
+def parse(markdown):
+    lines = markdown.split('\n')
+    res = ''
+    in_list = False
+    in_list_append = False
+    for i in lines:
+        i = replace_header_tags(i)
+        i = replace_bold_tags(i)
+        i = replace_italic_tags(i)
+        m = re.match(r'\* (.*)', i)
+        if m:
+            if not in_list:
+                in_list = True
+                curr = m.group(1)
+                i = '<ul><li>' + curr + '</li>'
+            else:
+                curr = m.group(1)
+                i = '<li>' + curr + '</li>'
+        else:
+            if in_list:
+                in_list_append = True
+                in_list = False
+
+        m = re.match('<h|<ul|<p|<li', i)
+        if not m:
+            i = '<p>' + i + '</p>'
+        if in_list_append:
+            i = '</ul>' + i
+            in_list_append = False
+        res += i
+    if in_list:
+        res += '</ul>'
+    return res
+```
+
+It's still quite hard to follow the code, given the `in_list` and `in_list_append` state variables.  
+They are used to track whether we're inside a list (`<ul>` tag opened but not closed) and whether we are ready  
+to append a closing tag `</ul>`.
+
+We can instead have one variable to store the unordered list. We can then generate the whole list first,
+and then append it to the result string, rather than appending list items piece-by-piece:
+
+```python
+def parse(markdown):
+    lines = markdown.split('\n')
+    res = ''
+    unordered_list = ''
+    for i in lines:
+        line = replace_header_tags(i)
+        line = replace_bold_tags(line)
+        line = replace_italic_tags(line)
+        m = check_if_list_item(line)
+        if m:
+            unordered_list += m
+            res += U_LIST.format(unordered_list) if is_last_line(i, lines) else ''
+            continue
+        elif not m and unordered_list:
+            res += U_LIST.format(unordered_list)
+            unordered_list = ''
+
+        line = catch_all_in_p_tag(line)
+        res += line
+    return res
+```
+
+3.  Cosmetic  
+    At this point, if you have time, you may want to make your code look prettier.  
+    For example, use constants and formatted strings instead of putting strings in functions.  
+    (This relates to Sandie Metz's concept of a "squint test").
 
 **Lessons**:  
 • during the refactor, do not change names of variables too early.  
@@ -110,4 +194,15 @@ gives 3 groups.
 You can refer to them as `m.group(1)`, `m.group(2)` etc.
 
 • each if-else block is usually a sign it can be refactored into a function that makes a decision (performs
-some kind of mapping)
+some kind of mapping)  
+• when mapping a list to another list, it may make sense to not mutate the original list, and
+save each item into a new variable:
+
+```python
+for i in lines:
+    line = replace_header_tags(i)
+    line = replace_bold_tags(line)
+    # etc.
+```
+
+• even better, you can use the `map` operation on the list, to make the code more functional

@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 OPENING_TAG = '<'
 CLOSING_TAG= '</'
+U_LIST = '<ul>{}</ul>'
 HEADERS = OrderedDict({'######': 'h6',
                        '#####': 'h5',
                        '####': 'h4',
@@ -11,7 +12,7 @@ HEADERS = OrderedDict({'######': 'h6',
                        '#': 'h1'})
 
 
-def detect_header_tags(l=''):
+def replace_header_tags(l=''):
     for k,v in HEADERS.items():
         line_with_header = re.match(f'{k} (.*)', l)
         if line_with_header:
@@ -20,7 +21,7 @@ def detect_header_tags(l=''):
     return l
 
 
-def detect_bold_tags(l=''):
+def replace_bold_tags(l=''):
     line_with_bold = re.match('(.*)__(.*)__(.*)', l)
     if line_with_bold:
         return line_with_bold.group(1) + '<strong>' + \
@@ -28,7 +29,7 @@ def detect_bold_tags(l=''):
     return l
 
 
-def detect_italic_tags(l=''):
+def replace_italic_tags(l=''):
     line_with_ital = re.match('(.*)_(.*)_(.*)', l)
     if line_with_ital:
         return line_with_ital.group(1) + '<em>' + \
@@ -36,40 +37,38 @@ def detect_italic_tags(l=''):
     return l
 
 
+def catch_all_in_p_tag(l=''):
+    return l if re.match('<h|<ul|<p|<li', l) else '<p>' + l + '</p>'
+
+def check_if_list_item(l=''):
+    list_item = re.match(r'\* (.*)', l)
+    if list_item:
+        return f'<li>{list_item.group(1)}</li>'
+    return False
+
+
+def is_last_line(i, _list):
+    return _list.index(i) == len(_list) - 1
+
+
 def parse(markdown):
     lines = markdown.split('\n')
     res = ''
-    in_list = False
-    in_list_append = False
+    unordered_list = ''
     for i in lines:
-        i = detect_header_tags(i)
-        m = re.match(r'\* (.*)', i)
-        if m:
-            if not in_list:
-                in_list = True
-                curr = m.group(1)
-                curr = detect_bold_tags(curr)
-                curr = detect_italic_tags(curr)
-                i = '<ul><li>' + curr + '</li>'
-            else:
-                curr = m.group(1)
-                curr = detect_bold_tags(curr)
-                curr = detect_italic_tags(curr)
-                i = '<li>' + curr + '</li>'
-        else:
-            if in_list:
-                in_list_append = True
-                in_list = False
+        line = replace_header_tags(i)
+        line = replace_bold_tags(line)
+        line = replace_italic_tags(line)
 
-        m = re.match('<h|<ul|<p|<li', i)
-        if not m:
-            i = '<p>' + i + '</p>'
-        i = detect_bold_tags(i)
-        i = detect_italic_tags(i)
-        if in_list_append:
-            i = '</ul>' + i
-            in_list_append = False
-        res += i
-    if in_list:
-        res += '</ul>'
+        m = check_if_list_item(line)
+        if m:
+            unordered_list += m
+            res += U_LIST.format(unordered_list) if is_last_line(i, lines) else ''
+            continue
+        elif not m and unordered_list:
+            res += U_LIST.format(unordered_list)
+            unordered_list = ''
+
+        line = catch_all_in_p_tag(line)
+        res += line
     return res
