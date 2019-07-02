@@ -47,15 +47,11 @@ def parse(markdown):
         if m:
             if not in_list:
                 in_list = True
-                is_bold = False
-                is_italic = False
                 curr = m.group(1)
                 curr = detect_bold_tags(curr)
                 curr = detect_italic_tags(curr)
                 i = '<ul><li>' + curr + '</li>'
             else:
-                is_bold = False
-                is_italic = False
                 curr = m.group(1)
                 curr = detect_bold_tags(curr)
                 curr = detect_italic_tags(curr)

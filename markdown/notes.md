@@ -16,7 +16,7 @@ should be:
 
 ```python
 for i in lines:
-      i = detect_header_tags(i)
+      i = replace_header_tags(i)
 ```
 
 Instead of describing each type of header in a separate statement, we  
@@ -24,7 +24,7 @@ need a function (abstraction) that maps any header to its corresponding tag
 (generalises the behaviour to the set of all headers).
 
 ```python
-def detect_header_tags(l=''):
+def replace_header_tags(l=''):
     for k,v in HEADERS.items():
         line_with_header = re.match(f'{k} (.*)', l)
         if line_with_header:
@@ -34,7 +34,7 @@ def detect_header_tags(l=''):
 ...
 
 for i in lines:
-      i = detect_header_tags(i)
+      i = replace_header_tags(i)
 ```
 
 ### Bold text
@@ -67,7 +67,7 @@ should be:
 
 ```python
 curr = m.group(1)
-curr = detect_bold_tags(curr)
+curr = replace_bold_tags(curr)
 ```
 
 Both blocks of code describe the same behaviour:  
@@ -75,19 +75,19 @@ they map all strings surrounded by `__ __` to strings in `<strong> </strong>` ta
 Same goes for italic tags.
 
 ```python
-def detect_bold_tags(l=''):
+def replace_bold_tags(l=''):
     line_with_bold = re.match('(.*)__(.*)__(.*)', l)
     if line_with_bold:
         return line_with_bold.group(1) + '<strong>' + \
             line_with_bold.group(2) + '</strong>' + line_with_bold.group(3)
     return l
 
-def detect_bold_tags(l=''): # same deal
+def replace_bold_tags(l=''): # same deal
 ...
 
 curr = m.group(1)
-curr = detect_bold_tags(curr)
-curr = detect_italic_tags(curr)
+curr = replace_bold_tags(curr)
+curr = replace_italic_tags(curr)
 ```
 
 2.  Second step: reduce number variables tracking state
