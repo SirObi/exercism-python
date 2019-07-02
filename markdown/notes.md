@@ -218,23 +218,17 @@
     line_with_ital.group(1) + '<em>' + line_with_ital.group(2)) + '<em>'+ line_with_ital.group(3)
     ```
 
-**Lessons**:  
+###Lessons:  
+**Refactoring**
+
 • during the refactor, do not change names of variables too early.  
 Changing `i` to `line_with_headers` might improve readability, but at an early  
 stage, it will likely break something down the line (especially if the function you're refactoring
-is a long pipeline of operations). Cost me at least 15 mins of debugging and printing.  
-• in `re.match()`, the `(.*)` each corresponds to one `group`. If `re` matches a phrase, this phrase splits the string
-into groups. It's fairly useful for parsing text.
-
-```
-m = re.match('(._)\_\_(._)\_\_(.\*)', curr)
-```
-
-gives 3 groups.
-You can refer to them as `m.group(1)`, `m.group(2)` etc.
+is a long pipeline of operations). Cost me at least 15 mins of debugging and printing.
 
 • each if-else block is usually a sign it can be refactored into a function that makes a decision (performs
-some kind of mapping)  
+some kind of mapping)
+
 • when mapping a list to another list, it may make sense to not mutate the original list, and
 save each item into a new variable:
 
@@ -246,3 +240,27 @@ for i in lines:
 ```
 
 • even better, if possible, you can use the `map` operation on the list, to make the code more functional
+
+**Regular Expressions**
+
+• in `re.match()`, the `(._)`each corresponds to one`group`. If`re` matches a phrase, this phrase splits the string
+into groups. It's fairly useful for parsing text.
+
+```
+m = re.match('(._)\_\_(._)\_\_(.\*)', curr)
+```
+
+gives 3 groups.  
+You can refer to them as `m.group(1)`, `m.group(2)` etc.
+
+• it's possible to use the `re.compile()` and then `re.sub()` methods for this exercise:
+
+```python
+BOLD_RE = re.compile(r"__(.*?)__")
+...
+line = BOLD_RE.sub(r"<strong>\1</strong>", line)
+```
+
+Where `\1` refers to the group (`()`) in the RegEx.
+
+• the `0` group in a `re` match object is the entire passed-in string
