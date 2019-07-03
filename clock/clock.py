@@ -10,8 +10,7 @@ class Clock(object):
 
     @property
     def hour(self):
-        n_hours = floor(floor(self.minutes / 60) % 24)
-        return 0 if n_hours == 24 else n_hours
+        return floor(self.minutes / 60) % 24
 
     @property
     def minute(self):
