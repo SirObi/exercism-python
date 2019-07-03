@@ -32,14 +32,44 @@ class Clock(object):
         return f"{int}" if int > 9 else f"0{int}"
 ```
 
+---
+
 Trying to use **str** to represent an object led to maximum recursion error when eq was called  
 between two `Clock`s.
 
-Lessons:
+---
 
-**OOP**  
-• using `__repr__` to represent an object is better than modifying it's `__str__`
+Alternative ways of formatting string:
+
+Add necessary zeroes `zfill` (Exercism user `jennelba`):
+
+```python
+str(self.hour).zfill(2) + ':' + str(self.minute).zfill(2)
+```
+
+Using `.format` and supplying required format (user `sm1th`):
+
+```python
+"{:02d}:{:02d}".format(self.hrs, self.mins)
+```
+
+---
+
+To get hours and minutes separately, you can also use the "better" version of modulo (`%`) - `divmod` (user `sm1th`):
+
+```python
+hours, self.mins = divmod(mins, 60)
+```
+
+###Lessons:
+
+**OOP**
+
+• using `__repr__` to represent an object is better than modifying its `__str__`
 
 **General programming**:
+
 • tracking the same value with two different counters (e.g. hours and minutes) is a bad idea and can slow  
 down development
+
+• `divmod` is a function which gives you both the quotient and remainder, whereas `%` only gives you the remainder
