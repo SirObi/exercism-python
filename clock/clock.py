@@ -5,8 +5,8 @@ class Clock(object):
         self.minutes = hour * 60 + minute
 
     def __repr__(self):
-        return f"{self._turn_into_clock_time(self.hour)}:" + \
-               f"{self._turn_into_clock_time(self.minute)}"
+        return f"{self._turn_into_clock_time(self.hour)}" + \
+               f":{self._turn_into_clock_time(self.minute)}"
 
     @property
     def hour(self):
